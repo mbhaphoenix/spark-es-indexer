@@ -12,8 +12,8 @@
     <properties>
         <java.version>1.8</java.version>
         <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
-        <spark.version>2.1.0.cloudera1</spark.version>
-        <elasticsearch-hadoop.version>5.6.3</elasticsearch-hadoop.version>
+        <spark.version>2.1.0</spark.version>
+        <elasticsearch-hadoop.version>5.6.0</elasticsearch-hadoop.version>
         <slf4j.version>1.7.5</slf4j.version>
         <logback.version>1.2.3</logback.version>
         <start-class>com.rte.dsit.data.bdf.odessa.indexer.Main</start-class>
@@ -24,26 +24,29 @@
     <repositories>
         <repository>
             <id>nexus</id>
-            <url>http://udd-nexus.rte-france.com:8081/repository/maven-public/</url>
+            <url>https://devin-depot.rte-france.com/repository/maven-public/</url>
         </repository>
-        <!--<repository>
-            <id>conjars.org</id>
-            <url>http://conjars.org/repo</url>
-        </repository>-->
     </repositories>
 
     <distributionManagement>
         <repository>
             <id>deployment</id>
             <name>Release du projet odessa</name>
-            <url>http://udd-nexus.rte-france.com:8081/repository/odessa-releases</url>
+            <url>https://devin-depot.rte-france.com/repository/odessa-releases</url>
         </repository>
         <snapshotRepository>
             <id>deployment</id>
             <name>Snapshot du projet odessa</name>
-            <url>http://udd-nexus.rte-france.com:8081/repository/odessa-snapshots</url>
+            <url>https://devin-depot.rte-france.com/repository/odessa-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <!--<distributionManagement>
+        <repository>
+            <id>ssh-repository</id>
+            <url>scpexe://PF9SOODESS058/home/phoenix_dev00</url>
+        </repository>
+    </distributionManagement>-->
 
 
     <dependencies>
@@ -77,26 +80,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch-hadoop</artifactId>
-            <version>5.6.3</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>cascading-hadoop</artifactId>
-                    <groupId>cascading</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>cascading-local</artifactId>
-                    <groupId>cascading</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>pentaho-aggdesigner-algorithm</artifactId>
-                    <groupId>org.pentaho</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch-spark-20_2.11</artifactId>
@@ -111,12 +94,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-            <scope>provided</scope>
-        </dependency>-->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -135,6 +112,14 @@
     </dependencies>
 
     <build>
+        <!--<extensions>
+            &lt;!&ndash; Enabling the use of SSH &ndash;&gt;
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>3.0.0</version>
+            </extension>
+        </extensions>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -144,6 +129,33 @@
                     <target>${java.version}</target>
                 </configuration>
                 <version>3.7.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>org.elasticsearch</groupId>
+                            <artifactId>elasticsearch-spark-20_2.11</artifactId>
+                            <version>${elasticsearch-hadoop.version}</version>
+                            <type>jar</type>
+                            <overWrite>true</overWrite>
+                            <outputDirectory>lib</outputDirectory>
+                            <destFileName>elasticsearch-spark.jar</destFileName>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -159,6 +171,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.18.1</version>
+                <configuration>
+                    <environmentVariables>
+                        <ES_NODES>localhost</ES_NODES>
+                        <ES_PORT>9200</ES_PORT>
+                    </environmentVariables>
+                </configuration>
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -170,6 +188,13 @@
                                 <include>**/*IntegrationTest.class</include>
                             </includes>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -278,5 +303,50 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>scp-to-remote</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <scp localFile="${project.basedir}/target/spark-es-indexer-0.1-SNAPSHOT-dist.tar.gz"
+                                          remoteToFile="phoenix_dev00@PF9SOODESS058:/home/phoenix_dev00" verbose="true"
+                                          keyfile="D:\local\keys\phoenix_dev00.ppk"
+                                          passphrase="">
+                                        </scp>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.jcraft</groupId>
+                                <artifactId>jsch</artifactId>
+                                <version>0.1.54</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant-jsch</artifactId>
+                                <version>1.10.1</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

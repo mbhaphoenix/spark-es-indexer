@@ -3,24 +3,36 @@ package com.rte.dsit.data.bdf.odessa.indexer.conf;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Data
 @Component
+@Validated
 @ConfigurationProperties
 public class ApplicationArguments {
 
     @NotNull
-    private String index;
+    @Pattern(regexp = ".+/.+")
+    private String indexType;
 
     @NotNull
-    private String type;
+    @Pattern(regexp = "^(select|SELECT)\\s.+(from|FROM)\\s.+\\..+$")
+    private String sqlQuery;
+
+    @Min(1)
+    @Max(1000)
+    private int splitsNumber;
 
     @NotNull
-    private String dbName;
+    private String esNodes;
 
     @NotNull
-    private String tableName;
+    private String esPort;
+
 
 }

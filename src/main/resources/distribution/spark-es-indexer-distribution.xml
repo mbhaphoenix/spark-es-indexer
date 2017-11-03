@@ -9,8 +9,16 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <include>run.sh</include>
+                <include>reset-index.sh</include>
             </includes>
             <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>lib</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>elasticsearch-spark.jar</include>
+            </includes>
         </fileSet>
         <fileSet>
             <directory>config</directory>
@@ -18,7 +26,6 @@
             <includes>
                 <include>application.properties</include>
             </includes>
-            <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
             <directory>src/main/resources</directory>
