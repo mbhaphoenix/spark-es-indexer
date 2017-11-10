@@ -1,7 +1,6 @@
-package com.rte.dsit.data.bdf.odessa.indexer.job;
+package io.mbhaphoenix.indexer.job;
 
-import com.rte.dsit.data.bdf.odessa.indexer.conf.ApplicationArguments;
-import org.apache.spark.SparkContext;
+import io.mbhaphoenix.indexer.conf.ApplicationArguments;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
 import org.elasticsearch.spark.sql.EsSparkSQL;

@@ -1,6 +1,6 @@
-package com.rte.dsit.data.bdf.odessa.indexer;
+package io.mbhaphoenix.indexer;
 
-import com.rte.dsit.data.bdf.odessa.indexer.job.SparkJobRunner;
+import io.mbhaphoenix.indexer.job.SparkJobRunner;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

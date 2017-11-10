@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.rte.dsit.data.bdf.odessa</groupId>
+    <groupId>io.mbha-phoenix</groupId>
     <artifactId>spark-es-indexer</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -16,40 +16,12 @@
         <elasticsearch-hadoop.version>5.6.0</elasticsearch-hadoop.version>
         <slf4j.version>1.7.5</slf4j.version>
         <logback.version>1.2.3</logback.version>
-        <start-class>com.rte.dsit.data.bdf.odessa.indexer.Main</start-class>
+        <start-class>io.mbhaphoenix.indexer.Main</start-class>
 
         <exec-classifier>exec</exec-classifier>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>nexus</id>
-            <url>https://devin-depot.rte-france.com/repository/maven-public/</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>deployment</id>
-            <name>Release du projet odessa</name>
-            <url>https://devin-depot.rte-france.com/repository/odessa-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>deployment</id>
-            <name>Snapshot du projet odessa</name>
-            <url>https://devin-depot.rte-france.com/repository/odessa-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <!--<distributionManagement>
-        <repository>
-            <id>ssh-repository</id>
-            <url>scpexe://PF9SOODESS058/home/phoenix_dev00</url>
-        </repository>
-    </distributionManagement>-->
-
-
-    <dependencies>
+        <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
@@ -111,15 +83,7 @@
 
     </dependencies>
 
-    <build>
-        <!--<extensions>
-            &lt;!&ndash; Enabling the use of SSH &ndash;&gt;
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>3.0.0</version>
-            </extension>
-        </extensions>-->
+    <build>        
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -323,8 +287,8 @@
                                 <configuration>
                                     <target>
                                         <scp localFile="${project.basedir}/target/spark-es-indexer-0.1-SNAPSHOT-dist.tar.gz"
-                                          remoteToFile="phoenix_dev00@PF9SOODESS058:/home/phoenix_dev00" verbose="true"
-                                          keyfile="D:\local\keys\phoenix_dev00.ppk"
+                                          remoteToFile="user@host:/home/user" verbose="true"
+                                          keyfile="D:\local\keys\user.ppk"
                                           passphrase="">
                                         </scp>
                                     </target>

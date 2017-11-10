@@ -1,4 +1,4 @@
-package com.rte.dsit.data.bdf.odessa.indexer.conf;
+package io.mbhaphoenix.indexer.conf;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

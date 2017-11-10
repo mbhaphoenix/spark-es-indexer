@@ -1,6 +1,6 @@
-package com.rte.dsit.data.bdf.odessa.indexer;
+package io.mbhaphoenix.indexer;
 
-import com.rte.dsit.data.bdf.odessa.indexer.job.SparkJobRunner;
+import io.mbhaphoenix.indexer.job.SparkJobRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
